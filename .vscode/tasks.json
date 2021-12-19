@@ -3,33 +3,17 @@
     "tasks": [
         {
             "type": "cppbuild",
-            "label": "C/C++: g++.exe build active file",
-            "command": "C:\\raylib\\w64devkit\\bin\\g++.exe",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe",
-                "-lwsock32"
-            ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": ["$gcc"],
-            "group": "build",
-            "detail": "compiler: C:\\raylib\\w64devkit\\bin\\g++.exe"
-        },
-        {
-            "type": "cppbuild",
-            "label": "C/C++: g++.exe build all files",
+            "label": "C/C++: g++.exe build server",
             "command": "C:\\raylib\\w64devkit\\bin\\g++.exe",
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
                 "*.cpp",
+                "-I",
+                "../src/headers",
+                "-std=c++11",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "../bin/server.exe",
                 "-lwsock32"
             ],
             "options": {
