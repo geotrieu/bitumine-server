@@ -54,7 +54,7 @@ bool Socket::open(unsigned short port) {
     return true;
 }
         
-void Socket::close() {
+void Socket::terminate() {
     #if PLATFORM == PLATFORM_MAC || PLATFORM == PLATFORM_UNIX
         close(handle);
     #elif PLATFORM == PLATFORM_WINDOWS

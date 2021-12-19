@@ -68,4 +68,6 @@ int main() {
             }
         }
     }
+
+    socket.terminate();
 }
