@@ -50,4 +50,6 @@ int main() {
             }
         }
     }
+
+    socket.terminate();
 }
