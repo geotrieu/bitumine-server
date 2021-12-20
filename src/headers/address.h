@@ -5,6 +5,8 @@ class Address {
     public:
         Address();
 
+        Address(char addr[]);
+
         Address(unsigned char a, unsigned char b, unsigned char c, unsigned char d, unsigned short port);
 
         Address(unsigned int address, unsigned short port);

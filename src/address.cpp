@@ -1,4 +1,6 @@
 #include "address.h"
+#include <string>
+#include <string.h>
 
 /**
  * Address Class
@@ -10,6 +12,25 @@
 Address::Address() {
     // Initialize to 0.0.0.0:0 by default
     Address(0, 0, 0, 0, 0);
+}
+
+//format is 0.0.0.0
+//TODO: implement 0.0.0.0:0000 format
+Address::Address(char address[]) {
+    int ip_address_classes[] = {0, 0, 0, 0};
+
+    char * ip_address_part;
+    /* get the first token */
+    ip_address_part = strtok(address, ".");
+    
+    /* walk through other tokens */
+    for (int i = 0; i < 4; i++) {
+        ip_address_classes[i] = std::stoi(ip_address_part);
+        
+        ip_address_part = strtok(NULL, ".");
+    }
+
+    Address(ip_address_classes[0], ip_address_classes[1], ip_address_classes[2], ip_address_classes[3], 0);
 }
 
 Address::Address(unsigned char a, unsigned char b, unsigned char c, unsigned char d, unsigned short port) {

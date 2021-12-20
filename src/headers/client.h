@@ -4,7 +4,6 @@
 #define CLIENT_KEEP_ALIVE_MS 10000
 
 #include <ctime>
-#include "socket.h"
 
 class Client {
     private:
