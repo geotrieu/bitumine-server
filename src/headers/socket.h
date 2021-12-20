@@ -46,6 +46,8 @@ class Socket {
         bool send(const Address & destination, const void * data, int size);
         
         int receive(Address & sender, void * data, int size);
+
+        int receive(Address & sender, void * data, int size, unsigned int & from_address, unsigned int & from_port);
 };
 
 #endif

@@ -79,6 +79,12 @@ bool Socket::send(const Address & destination, const void * data, int size) {
 }
         
 int Socket::receive(Address & sender, void * data, int size) {
+    unsigned int from_address = 0;
+    unsigned int from_port = 0;
+    return receive(sender, data, size, from_address, from_port);
+}
+
+int Socket::receive(Address & sender, void * data, int size, unsigned int & from_address, unsigned int & from_port) {
     #if PLATFORM == PLATFORM_WINDOWS
         typedef int socklen_t;
     #endif
@@ -88,9 +94,9 @@ int Socket::receive(Address & sender, void * data, int size) {
 
     int bytes = recvfrom(handle, (char*)data, size, 0, (sockaddr*)&from, &fromLength);
 
-    unsigned int from_address = ntohl(from.sin_addr.s_addr);
+    from_address = ntohl(from.sin_addr.s_addr);
 
-    unsigned int from_port = ntohs(from.sin_port);
+    from_port = ntohs(from.sin_port);
 
     return bytes;
 }
