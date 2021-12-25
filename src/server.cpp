@@ -62,6 +62,8 @@ int main()
             if (bytes_read > 0)
             {
                 std::cout << bytes_read << std::endl;
+                std::cout << "-----------------" << std::endl;
+                std::cout << "Protocol ID: " << p.getProtocolID() << std::endl;
                 std::cout << p.getData() << std::endl;
             }
         }
