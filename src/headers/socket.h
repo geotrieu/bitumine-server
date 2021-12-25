@@ -44,8 +44,6 @@ class Socket {
         void terminate(); // NOTE(Noah): cannot be named close as gets mixed up with socket library close function.
         
         bool send(const Address & destination, const void * data, int size);
-
-        bool serializeAndSend(const Address &destination, const void *data, int size);
         
         int receive(Address & sender, void * data, int size);
 
