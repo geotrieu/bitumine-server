@@ -1,5 +1,6 @@
 #include "packet.h"
 #include <string>
+#include <iostream>
 
 /**
  * Packet Class
@@ -34,4 +35,39 @@ T Packet<T>::getData() const
     return this->data;
 }
 
+template <class T>
+std::ostream &Packet<T>::serialize(std::ostream &out) const
+{
+    out << this->protocol_id << "\n"
+        << this->data << "\n";
+    return out;
+}
+
+template <class T>
+std::istream &Packet<T>::deserialize(std::istream &in)
+{
+    if (in) {
+        in >> this->protocol_id;
+        in >> this->data;
+    }
+    return in;
+}
+
+template <class T>
+std::ostream &operator<<(std::ostream &out, const Packet<T> &obj)
+{
+    obj.serialize(out);
+    return out;
+}
+
+template <class T>
+std::istream &operator>>(std::istream &in, Packet<T> &obj)
+{
+    obj.deserialize(in);
+    return in;
+}
+
+// TODO: Remove need to explicitly instantiate different templates
 template class Packet<std::string>;
+template std::ostream& operator<<(std::ostream&, const Packet<std::string>&);
+template std::istream& operator>>(std::istream&, Packet<std::string>&);
