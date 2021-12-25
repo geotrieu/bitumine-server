@@ -36,6 +36,10 @@ Address::Address(char address[])
     init(ip_address_classes[0], ip_address_classes[1], ip_address_classes[2], ip_address_classes[3], 0);
 }
 
+Address::Address(char address[], unsigned short port) : Address(address) {
+    this->port = port;
+}
+
 Address::Address(unsigned char a, unsigned char b, unsigned char c, unsigned char d, unsigned short port)
 {
     init(a, b, c, d, port);
@@ -46,6 +50,21 @@ Address::Address(unsigned int address, unsigned short port) : address(address), 
 unsigned int Address::getAddress() const
 {
     return this->address;
+}
+
+char* Address::toString() const {
+    std::string addr = std::to_string(getA());
+    addr += ".";
+    addr += std::to_string(getB());
+    addr += ".";
+    addr += std::to_string(getC());
+    addr += ".";
+    addr += std::to_string(getD());
+    addr += ":";
+    addr += std::to_string(this->port);
+    char *addr_cstr = new char[addr.length() + 1];
+    strcpy(addr_cstr, addr.c_str());
+    return addr_cstr;
 }
 
 unsigned char Address::getA() const

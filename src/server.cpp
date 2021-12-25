@@ -33,45 +33,17 @@ int main()
     if (mode == 1)
     {
         //send packets
-        int ip_address_classes[] = {0, 0, 0, 0};
-
-        char *ip_address_part;
-        /* get the first token */
         char *ip_address_cstr = new char[ip_address.length() + 1];
         strcpy(ip_address_cstr, ip_address.c_str());
-        ip_address_part = strtok(ip_address_cstr, ".");
 
-        /* walk through other tokens */
-        for (int i = 0; i < 4; i++)
-        {
-            ip_address_classes[i] = std::stoi(ip_address_part);
-
-            ip_address_part = strtok(NULL, ".");
-        }
-        Address dest_address(ip_address_classes[0], ip_address_classes[1], ip_address_classes[2], ip_address_classes[3], dest_port);
+        Address dest_address(ip_address_cstr, dest_port);
 
         std::string phrase;
-        std::cout << "Enter phrase to send to: " << ip_address_classes[0] << "." << ip_address_classes[1] << "." << ip_address_classes[2] << "." << ip_address_classes[3] << std::endl;
+        std::cout << "Enter phrase to send to: " << dest_address.toString() << std::endl;
         std::cin >> phrase;
 
         Packet<std::string> p(0xFFFF, phrase);
-        //const char *packet_data = phrase.c_str();
-        //int packet_size = strlen(phrase.c_str());
-
-        std::ostringstream oss;
-        oss << p;
-        std::string serialized = oss.str();
-        const char *packet_data = serialized.c_str();
-        int packet_size = strlen(packet_data);
-
-        std::cout << "Sending " << serialized << " to the address with size " << packet_size << std::endl;
-
-        bool test = socket.send(dest_address, packet_data, packet_size);
-
-        if (test)
-        {
-            std::cout << "send success!" << std::endl;
-        }
+        p.serializeAndSend(socket, dest_address);
     }
     else
     {
@@ -92,16 +64,6 @@ int main()
                 std::cout << bytes_read << std::endl;
                 std::cout << p.getData() << std::endl;
             }
-
-            //if (bytes_read > 0)
-            //{
-            //    std::cout << bytes_read << std::endl;
-            //    for (int i = 0; i < bytes_read; i++)
-            //    {
-            //        std::cout << buffer[i];
-            //    }
-            //    std::cout << std::endl;
-            //}
         }
     }
 

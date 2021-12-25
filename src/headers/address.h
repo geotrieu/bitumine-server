@@ -8,11 +8,14 @@ public:
 
     Address(char addr[]);
 
+    Address(char addr[], unsigned short port);
+
     Address(unsigned char a, unsigned char b, unsigned char c, unsigned char d, unsigned short port);
 
     Address(unsigned int address, unsigned short port);
 
     unsigned int getAddress() const;
+    char* toString() const;
 
     unsigned char getA() const;
     unsigned char getB() const;

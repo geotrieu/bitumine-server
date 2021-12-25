@@ -2,6 +2,8 @@
 #define PACKET_H
 
 #include <sstream>
+#include "address.h"
+#include "socket.h"
 
 #define GAME_PACKET_ID 0x592F78C1
 
@@ -25,6 +27,8 @@ public:
     unsigned int getProtocolID() const;
 
     T getData() const;
+
+    bool serializeAndSend(Socket &socket, const Address &destination);
 
     std::ostream &serialize(std::ostream &out) const;
     friend std::ostream &operator<<<>(std::ostream &out, const Packet &obj);

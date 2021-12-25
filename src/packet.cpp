@@ -1,6 +1,6 @@
 #include "packet.h"
 #include <string>
-#include <iostream>
+#include <sstream>
 
 /**
  * Packet Class
@@ -33,6 +33,19 @@ template <class T>
 T Packet<T>::getData() const
 {
     return this->data;
+}
+
+// Serialize and Send
+// Data MUST be serializable through a stream
+template <class T>
+bool Packet<T>::serializeAndSend(Socket &socket, const Address &destination) {
+    std::ostringstream oss;
+    oss << *this;
+    std::string serialized = oss.str();
+    const char *packet_data = serialized.c_str();
+    int packet_size = strlen(packet_data);
+
+    return socket.send(destination, packet_data, packet_size);
 }
 
 template <class T>
