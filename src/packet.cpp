@@ -1,4 +1,5 @@
 #include "packet.h"
+#include <string>
 
 /**
  * Packet Class
@@ -8,23 +9,29 @@
 **/
 
 template <class T>
-Packet<T>::Packet() {
-    Packet(0, __null);
+Packet<T>::Packet()
+{
+    this->protocol_id = 0;
 }
 
 template <class T>
-Packet<T>::Packet(unsigned int protocol_id, T data) {
+Packet<T>::Packet(unsigned int protocol_id, T data)
+{
     this->protocol_id = protocol_id;
     T data_copy = data;
     this->data = data_copy;
 }
 
 template <class T>
-unsigned int Packet<T>::getProtocolID() const {
+unsigned int Packet<T>::getProtocolID() const
+{
     return this->protocol_id;
 }
 
 template <class T>
-T Packet<T>::getData() const {
+T Packet<T>::getData() const
+{
     return this->data;
 }
+
+template class Packet<std::string>;
