@@ -9,6 +9,7 @@
  * Designed and Implemented by George Trieu
 **/
 
+/*
 template <class T>
 Packet<T>::Packet()
 {
@@ -34,11 +35,12 @@ T Packet<T>::getData() const
 {
     return this->data;
 }
+*/
 
 // Serialize and Send
 // Data MUST be serializable through a stream
-template <class T>
-bool Packet<T>::serializeAndSend(Socket &socket, const Address &destination) {
+//template <class T>
+/*bool Packet::serializeAndSend(Socket &socket, const Address &destination) {
     std::ostringstream oss;
     oss << *this;
     std::string serialized = oss.str();
@@ -46,8 +48,9 @@ bool Packet<T>::serializeAndSend(Socket &socket, const Address &destination) {
     int packet_size = strlen(packet_data);
 
     return socket.send(destination, packet_data, packet_size);
-}
+}*/
 
+/*
 template <class T>
 std::ostream &Packet<T>::serialize(std::ostream &out) const
 {
@@ -84,3 +87,4 @@ std::istream &operator>>(std::istream &in, Packet<T> &obj)
 template class Packet<std::string>;
 template std::ostream& operator<<(std::ostream&, const Packet<std::string>&);
 template std::istream& operator>>(std::istream&, Packet<std::string>&);
+*/

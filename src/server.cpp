@@ -7,6 +7,8 @@
 unsigned short port;
 unsigned short dest_port;
 
+bool handleStringPacket(std::istringstream &iss);
+
 int main()
 {
 
@@ -42,8 +44,25 @@ int main()
         std::cout << "Enter phrase to send to: " << dest_address.toString() << std::endl;
         std::cin >> phrase;
 
-        Packet<std::string> p(0xFFFF, phrase);
-        p.serializeAndSend(socket, dest_address);
+        /* Send Packet Sequence Steps
+            1. Create Output String Stream
+            2. Send Game Protocol ID onto the stream
+            3. Send Packet Identifier (identifies the type of data being sent) onto the stream
+            4. Send Packet Data Length onto the stream
+            5. Send Packet Data onto the stream
+            6. Serialize Output String Stream
+            7. Send Serialized Data
+        */
+        std::ostringstream oss;
+        oss << (int) GAME_PACKET_ID;
+        oss << (uint8_t) STRING_DATA;
+        oss << (int) phrase.length();
+        oss << phrase;
+        std::string serialized = oss.str();
+        std::cout << "sending: " << serialized << std::endl;
+        const char *packet_data = serialized.c_str();
+        int packet_size = strlen(packet_data);
+        socket.send(dest_address, packet_data, packet_size);
     }
     else
     {
@@ -53,21 +72,44 @@ int main()
             Address sender;
             char buffer[256];
             int bytes_read = socket.receive(sender, buffer, sizeof(buffer));
-            std::string serialized(buffer);
-            std::istringstream iss(serialized);
-            Packet<std::string> p;
-            iss >> p;
-
             // process received packet
-            if (bytes_read > 0)
-            {
-                std::cout << bytes_read << std::endl;
-                std::cout << "-----------------" << std::endl;
-                std::cout << "Protocol ID: " << p.getProtocolID() << std::endl;
-                std::cout << p.getData() << std::endl;
+            if (bytes_read > 0) {
+                std::string serialized(buffer);
+                std::istringstream iss(serialized);
+                int packet_id = 0;
+                iss >> packet_id;
+                if (packet_id != GAME_PACKET_ID) {
+                    std::cout << "invalid packet id: " << packet_id;
+                    continue;
+                }
+
+                uint8_t packet_type = 0;
+                iss >> packet_type;
+                switch (packet_type) {
+                    case STRING_DATA:
+                        handleStringPacket(iss);
+                        break;
+                    default:
+                        std::cout << "invalid packet type: " << packet_type;
+                        continue;
+                }
             }
         }
     }
 
     socket.terminate();
+}
+
+bool handleStringPacket(std::istringstream &iss) {
+    int data_length = 0;
+    iss >> data_length;
+    if (data_length == 0) return false;
+    std::string s = "";
+    iss >> s;
+    
+    std::cout << "-----------------" << std::endl;
+    std::cout << "String Length: " << data_length << std::endl;
+    std::cout << s << std::endl;
+    std::cout << "-----------------" << std::endl;
+    return true;
 }
