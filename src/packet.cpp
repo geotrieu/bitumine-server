@@ -9,82 +9,29 @@
  * Designed and Implemented by George Trieu
 **/
 
-/*
-template <class T>
-Packet<T>::Packet()
-{
-    this->protocol_id = 0;
-}
-
-template <class T>
-Packet<T>::Packet(unsigned int protocol_id, T data)
-{
-    this->protocol_id = protocol_id;
-    T data_copy = data;
-    this->data = data_copy;
-}
-
-template <class T>
-unsigned int Packet<T>::getProtocolID() const
-{
-    return this->protocol_id;
-}
-
-template <class T>
-T Packet<T>::getData() const
-{
-    return this->data;
-}
-*/
-
-// Serialize and Send
-// Data MUST be serializable through a stream
-//template <class T>
-/*bool Packet::serializeAndSend(Socket &socket, const Address &destination) {
+// sendData
+// Sends serialized data to the destination
+bool Packet::sendData(Socket &socket, const Address &destination, uint8_t data_type, std::string data_serialized) {
+    /* Send Packet Sequence Steps
+        1. Create Output String Stream
+        2. Send Game Protocol ID onto the stream
+        3. Send Packet Identifier (identifies the type of data being sent) onto the stream
+        4. Send Packet Data Length onto the stream
+        5. Send Packet Data onto the stream
+        6. Serialize Output String Stream
+        7. Send Serialized Data
+    */
     std::ostringstream oss;
-    oss << *this;
+    oss << (int) GAME_PACKET_ID;
+    oss << (uint8_t) data_type;
+    oss << (int) data_serialized.length();
+    oss << data_serialized;
     std::string serialized = oss.str();
     const char *packet_data = serialized.c_str();
     int packet_size = strlen(packet_data);
-
     return socket.send(destination, packet_data, packet_size);
-}*/
-
-/*
-template <class T>
-std::ostream &Packet<T>::serialize(std::ostream &out) const
-{
-    out << this->protocol_id << "\n"
-        << this->data << "\n";
-    return out;
 }
 
-template <class T>
-std::istream &Packet<T>::deserialize(std::istream &in)
-{
-    if (in) {
-        in >> this->protocol_id;
-        in >> this->data;
-    }
-    return in;
+bool Packet::sendString(Socket &socket, const Address &destination, std::string payload) {
+    return sendData(socket, destination, (uint8_t) STRING_DATA, payload);
 }
-
-template <class T>
-std::ostream &operator<<(std::ostream &out, const Packet<T> &obj)
-{
-    obj.serialize(out);
-    return out;
-}
-
-template <class T>
-std::istream &operator>>(std::istream &in, Packet<T> &obj)
-{
-    obj.deserialize(in);
-    return in;
-}
-
-// TODO: Remove need to explicitly instantiate different templates
-template class Packet<std::string>;
-template std::ostream& operator<<(std::ostream&, const Packet<std::string>&);
-template std::istream& operator>>(std::istream&, Packet<std::string>&);
-*/

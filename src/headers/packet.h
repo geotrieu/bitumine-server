@@ -9,33 +9,11 @@
 
 #define STRING_DATA 0x1
 
-//template <class T> class Packet;
-
-//template <class T> std::ostream &operator<<(std::ostream &out, const Packet<T> &obj);
-//template <class T> std::istream &operator>>(std::istream &in, Packet<T> &obj);
-
-//template <class T>
 class Packet
 {
-private:
-    //unsigned int protocol_id;
-    //T data;
-
-public:
-    //Packet();
-
-    //Packet(unsigned int protocol_id, T data);
-
-    //unsigned int getProtocolID() const;
-
-    //T getData() const;
-
-    static bool serializeAndSend(Socket &socket, const Address &destination);
-
-    //std::ostream &serialize(std::ostream &out) const;
-    //friend std::ostream &operator<<<>(std::ostream &out, const Packet &obj);
-    //std::istream &deserialize(std::istream &in);
-    //friend std::istream &operator>><>(std::istream &in, Packet &obj);
+    public:
+        static bool sendData(Socket &socket, const Address &destination, uint8_t data_type, std::string data_serialized);
+        static bool sendString(Socket &socket, const Address &destination, std::string payload);
 };
 
 #endif

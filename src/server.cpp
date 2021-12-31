@@ -44,25 +44,7 @@ int main()
         std::cout << "Enter phrase to send to: " << dest_address.toString() << std::endl;
         std::cin >> phrase;
 
-        /* Send Packet Sequence Steps
-            1. Create Output String Stream
-            2. Send Game Protocol ID onto the stream
-            3. Send Packet Identifier (identifies the type of data being sent) onto the stream
-            4. Send Packet Data Length onto the stream
-            5. Send Packet Data onto the stream
-            6. Serialize Output String Stream
-            7. Send Serialized Data
-        */
-        std::ostringstream oss;
-        oss << (int) GAME_PACKET_ID;
-        oss << (uint8_t) STRING_DATA;
-        oss << (int) phrase.length();
-        oss << phrase;
-        std::string serialized = oss.str();
-        std::cout << "sending: " << serialized << std::endl;
-        const char *packet_data = serialized.c_str();
-        int packet_size = strlen(packet_data);
-        socket.send(dest_address, packet_data, packet_size);
+        Packet::sendString(socket, dest_address, phrase);
     }
     else
     {
