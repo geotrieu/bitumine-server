@@ -15,6 +15,11 @@ Address::Address()
     init(0, 0, 0, 0, 0);
 }
 
+Address::Address(Address &a) {
+    address = a.getAddress();
+    port = a.getPort();
+}
+
 //format is 0.0.0.0
 //TODO: implement 0.0.0.0:0000 format
 Address::Address(char address[])
@@ -46,11 +51,6 @@ Address::Address(unsigned char a, unsigned char b, unsigned char c, unsigned cha
 }
 
 Address::Address(unsigned int address, unsigned short port) : address(address), port(port) {}
-
-unsigned int Address::getAddress() const
-{
-    return this->address;
-}
 
 char* Address::toString() const {
     std::string addr = std::to_string(getA());
@@ -87,10 +87,10 @@ unsigned char Address::getD() const
     return this->address & 0xFFFF;
 }
 
-unsigned short Address::getPort() const
-{
-    return this->port;
-}
+unsigned int Address::getAddress() const { return this->address; }
+unsigned short Address::getPort() const { return this->port; }
+void Address::setAddresss(unsigned int addr) { this->address = addr; } 
+void Address::setPort(unsigned short port) { this->port = port; }
 
 void Address::init(unsigned char a, unsigned char b, unsigned char c, unsigned char d, unsigned short port)
 {
