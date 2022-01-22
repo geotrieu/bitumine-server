@@ -1,6 +1,7 @@
 #include "packet.h"
 #include <string>
 #include <sstream>
+#include <memory.h>
 
 /**
  * Packet Class
@@ -35,3 +36,35 @@ bool Packet::sendData(Socket &socket, const Address &destination, uint8_t data_t
 bool Packet::sendString(Socket &socket, const Address &destination, std::string payload) {
     return sendData(socket, destination, (uint8_t) STRING_DATA, payload);
 }
+
+// DESIGNED AND IMPLEMENTED BY NOAH CABRAL // 
+Packet::Packet() {
+    unsigned int packetType = 0;
+}
+
+Packet::Packet(unsigned int packetType, void *data, unsigned int dataSize) {
+    this->packetType = packetType;
+    packet_header packetHeader;
+    packetHeader.packetID = GAME_PACKET_ID;
+    packetHeader.packetType = packetType;
+    packetHeader.dataLength = dataSize; // NOTE(Noah): Again, not really important...
+    memcpy(this->getHeaderPtr(), &packetHeader, sizeof(packet_header));
+    memcpy(this->getDataPtr(), data, dataSize);
+}
+
+bool Packet::sendDataWithSocket(
+    Socket &socket, 
+    const Address &destination
+) {
+    bool result = socket.send(destination, this->data, this->dataSize);
+    return result;
+}
+
+void *Packet::getDataPtr() {
+    return (void *)((char *)this->data + sizeof(packet_header));
+}
+void *Packet::getHeaderPtr() {
+    return this->data;
+}
+
+// DESIGNED AND IMPLEMENTED BY NOAH CABRAL //
