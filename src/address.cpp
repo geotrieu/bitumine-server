@@ -15,7 +15,7 @@ Address::Address()
     init(0, 0, 0, 0, 0);
 }
 
-Address::Address(Address &a) {
+Address::Address(const Address &a) {
     address = a.getAddress();
     port = a.getPort();
 }

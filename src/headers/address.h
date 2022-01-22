@@ -5,7 +5,7 @@ class Address
 {
 public:
     Address();
-    Address(Address &); // copy constructor
+    Address(const Address &); // copy constructor
     Address(char addr[]);
     Address(char addr[], unsigned short port);
     Address(unsigned char a, unsigned char b, unsigned char c, unsigned char d, unsigned short port);
