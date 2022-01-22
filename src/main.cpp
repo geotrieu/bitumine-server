@@ -5,6 +5,25 @@
 #include <server.h>
 #include <vector>
 
+// TODO(Noah): 
+/*
+The idea is that the server won't actually need to know anything about any of the structures inside of
+the game.
+
+It simply needs to know the addr's that the packets came from.
+So that it can send out all incoming packages to all unique addr's.
+    - Alas! This is where the problem comes in! This assumes that each client is on a different addr.
+    But in testing, this is actually not the case.
+    - Each client is only identitifed by the uid in the player data and inside the packet.
+
+So ultimately. I don't think we can get away with having the server now know the actual internals
+of the packets.   
+
+So the grand solution is to have this common header file.
+- I can include player_packet.h, which is raylib independent.
+
+*/
+
 int main()
 {
     unsigned short port; std::string ip_address = "";
