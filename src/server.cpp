@@ -1,11 +1,16 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 #include "socket.h"
+#include "packet.h"
 
 unsigned short port;
 unsigned short dest_port;
 
-int main() {
+bool handleStringPacket(std::istringstream &iss);
+
+int main()
+{
 
     std::string ip_address = "";
 
@@ -21,53 +26,72 @@ int main() {
 
     Socket socket;
 
-    if (!socket.open(port)) {
-        printf( "failed to create socket\n" );
+    if (!socket.open(port))
+    {
+        printf("failed to create socket\n");
         return false;
     }
 
-    if (mode == 1) {
+    if (mode == 1)
+    {
         //send packets
-        int ip_address_classes[] = {0, 0, 0, 0};
-
-        char *ip_address_part;
-        /* get the first token */
-        char * ip_address_cstr = new char [ip_address.length()+1];
+        char *ip_address_cstr = new char[ip_address.length() + 1];
         strcpy(ip_address_cstr, ip_address.c_str());
-        ip_address_part = strtok(ip_address_cstr, ".");
-        
-        /* walk through other tokens */
-        for (int i = 0; i < 4; i++) {
-            ip_address_classes[i] = std::stoi(ip_address_part);
-            
-            ip_address_part = strtok(NULL, ".");
-        }
-        Address dest_address(ip_address_classes[0], ip_address_classes[1], ip_address_classes[2], ip_address_classes[3], dest_port);
+
+        Address dest_address(ip_address_cstr, dest_port);
 
         std::string phrase;
-        std::cout << "Enter phrase to send to: " << ip_address_classes[0] << "." << ip_address_classes[1] << "." << ip_address_classes[2] << "." << ip_address_classes[3] << std::endl;
+        std::cout << "Enter phrase to send to: " << dest_address.toString() << std::endl;
         std::cin >> phrase;
-        const char* packet_data = phrase.c_str();
-        int packet_size = strlen(phrase.c_str());
 
-        socket.send(dest_address, packet_data, packet_size);
-    } else {
+        Packet::sendString(socket, dest_address, phrase);
+    }
+    else
+    {
         //receive packets
-        while (true) {
+        while (true)
+        {
             Address sender;
-            unsigned char buffer[256];
+            char buffer[256];
             int bytes_read = socket.receive(sender, buffer, sizeof(buffer));
-
             // process received packet
             if (bytes_read > 0) {
-                std::cout << bytes_read << std::endl;
-                for (int i = 0; i < bytes_read; i++) {
-                    std::cout << buffer[i];
+                std::string serialized(buffer);
+                std::istringstream iss(serialized);
+                int packet_id = 0;
+                iss >> packet_id;
+                if (packet_id != GAME_PACKET_ID) {
+                    std::cout << "invalid packet id: " << packet_id;
+                    continue;
                 }
-                std::cout << std::endl;
+
+                uint8_t packet_type = 0;
+                iss >> packet_type;
+                switch (packet_type) {
+                    case STRING_DATA:
+                        handleStringPacket(iss);
+                        break;
+                    default:
+                        std::cout << "invalid packet type: " << packet_type;
+                        continue;
+                }
             }
         }
     }
 
     socket.terminate();
+}
+
+bool handleStringPacket(std::istringstream &iss) {
+    int data_length = 0;
+    iss >> data_length;
+    if (data_length == 0) return false;
+    std::string s = "";
+    iss >> s;
+    
+    std::cout << "-----------------" << std::endl;
+    std::cout << "String Length: " << data_length << std::endl;
+    std::cout << s << std::endl;
+    std::cout << "-----------------" << std::endl;
+    return true;
 }
