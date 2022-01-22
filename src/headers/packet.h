@@ -7,6 +7,7 @@
 
 #define GAME_PACKET_ID 0x592F78C1
 #define STRING_DATA 0x1
+#define PACKET_DATA_SIZE 2048 
 
 struct packet_header {
     int packetID;
@@ -26,12 +27,14 @@ class Packet
         bool sendDataWithSocket(Socket &socket, const Address &destination);
         void *getHeaderPtr();
         void *getDataPtr();
+        void setPacketType(unsigned int packetType);
+        void setDataSize(unsigned int dataSize);
     
     private:
         unsigned int packetType; // Implementation defined, 0 is reserved.
         // NOTE(Noah): Each packet object stores this data as a static array. This is to avoid calling malloc.
-        char data[2048]; // includes packet data as recieved (header + data)
-        char dataSize; // defined as total packet data amount (header + data)
+        char data[PACKET_DATA_SIZE]; // includes packet data as recieved (header + data)
+        unsigned int dataSize; // defined as total packet data amount (header + data)
         bool disconnectReq = false;
 
 };

@@ -67,4 +67,6 @@ void *Packet::getHeaderPtr() {
     return this->data;
 }
 
+void Packet::setPacketType(unsigned int packetType) { this->packetType = packetType; }
+void Packet::setDataSize(unsigned int dataSize) { this->dataSize = dataSize; }
 // DESIGNED AND IMPLEMENTED BY NOAH CABRAL //
