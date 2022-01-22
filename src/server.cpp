@@ -1,97 +1,65 @@
-#include <iostream>
+#include <server.h>
 #include <string>
-#include <sstream>
-#include "socket.h"
-#include "packet.h"
 
-unsigned short port;
-unsigned short dest_port;
+/**
+ * Server Class
+ * Used to store information about the connected server
+ * Designed and Implemented by George Trieu
+ *  and heavily modified by Noah Cabral
+**/
 
-bool handleStringPacket(std::istringstream &iss);
+Server::Server(const Address &addr) : Socket(), server_address(addr) {
+    // open socket.
+    if (!this->open(server_address.getPort()))
+    {
+        printf("Error: Failed to create socket\n");
+    }
+}
 
-int main()
+Server::~Server() {
+    this->terminate(); // close the socket.
+}
+
+void Server::setServerIP(char ip[])
 {
+    Address addr(ip);
+    this->server_address.setAddresss(addr.getAddress());
+}
 
-    std::string ip_address = "";
+void Server::setServerIP(unsigned int ip) { this->server_address.setAddresss(ip); }
+void Server::setServerPort(unsigned int port) { this->server_address.setPort(port); }
+unsigned int Server::getServerIP() const { return this->server_address.getAddress(); }
+void Server::setServerAddress(Address &address) { this->server_address = address; }
+unsigned int Server::getServerPort() const { return this->server_address.getPort(); }
+Address Server::getServerAddress() const { return server_address; };
 
-    std::cout << "Port for Socket" << std::endl;
-    std::cin >> port; // Get user input from the keyboard
-    std::cout << "Port for Destination Socket" << std::endl;
-    std::cin >> dest_port; // Get user input from the keyboard
-    std::cout << "IP Address" << std::endl;
-    std::cin >> ip_address; // Get user input from the keyboard
-    std::cout << "1 for Send, 2 for Receive" << std::endl;
-    int mode;
-    std::cin >> mode;
-
-    Socket socket;
-
-    if (!socket.open(port))
-    {
-        printf("failed to create socket\n");
-        return false;
-    }
-
-    if (mode == 1)
-    {
-        //send packets
-        char *ip_address_cstr = new char[ip_address.length() + 1];
-        strcpy(ip_address_cstr, ip_address.c_str());
-
-        Address dest_address(ip_address_cstr, dest_port);
-
-        std::string phrase;
-        std::cout << "Enter phrase to send to: " << dest_address.toString() << std::endl;
-        std::cin >> phrase;
-
-        Packet::sendString(socket, dest_address, phrase);
-    }
-    else
-    {
-        //receive packets
-        while (true)
-        {
-            Address sender;
-            char buffer[256];
-            int bytes_read = socket.receive(sender, buffer, sizeof(buffer));
-            // process received packet
-            if (bytes_read > 0) {
-                std::string serialized(buffer);
-                std::istringstream iss(serialized);
-                int packet_id = 0;
-                iss >> packet_id;
-                if (packet_id != GAME_PACKET_ID) {
-                    std::cout << "invalid packet id: " << packet_id;
-                    continue;
-                }
-
-                uint8_t packet_type = 0;
-                iss >> packet_type;
-                switch (packet_type) {
-                    case STRING_DATA:
-                        handleStringPacket(iss);
-                        break;
-                    default:
-                        std::cout << "invalid packet type: " << packet_type;
-                        continue;
-                }
+// listen for incoming packets. Return a list of all such valid packets recieved.
+packet_array Server::getPackets() {
+    
+    packet_array p;
+    p.packets = this->_packetStorage;
+    p.packetCount = 0;
+    Address addr;
+    int bytes_recieved = 1;
+    
+    // We make the assumotion that we get one packet at a time. 
+    while (bytes_recieved > 0 && p.packetCount < MAX_PACKETS) {
+        Packet &cPacket = p.packets[p.packetCount];
+        char *data = (char *)cPacket.getDataPtr();
+        bytes_recieved = this->receive(addr, (void *)data, PACKET_DATA_SIZE);
+        if (bytes_recieved > 0) {
+            packet_header *header = (packet_header *)data;
+            if (header->packetID == GAME_PACKET_ID) {
+                cPacket.setPacketType(header->packetType);
+                cPacket.setDataSize(bytes_recieved);
+                p.packetCount++;
             }
         }
     }
 
-    socket.terminate();
+    return p;
 }
 
-bool handleStringPacket(std::istringstream &iss) {
-    int data_length = 0;
-    iss >> data_length;
-    if (data_length == 0) return false;
-    std::string s = "";
-    iss >> s;
-    
-    std::cout << "-----------------" << std::endl;
-    std::cout << "String Length: " << data_length << std::endl;
-    std::cout << s << std::endl;
-    std::cout << "-----------------" << std::endl;
-    return true;
+void Server::sendPacket(Address addr, Packet packet) {
+    packet.sendDataWithSocket(*this, addr);
 }
